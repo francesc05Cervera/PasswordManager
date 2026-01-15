@@ -1,29 +1,28 @@
-package com.francesco.passwordmanager2026.GUI;
+package com.francesco.passwordmanager2026.GUI.Dialog;
 
 import com.francesco.passwordmanager2026.Controller.CredenzialiController;
+import com.francesco.passwordmanager2026.GUI.DashboardFrame;
 import com.francesco.passwordmanager2026.GUI.Theme.*;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class NuovaCredenzialeFrame extends JDialog {
+public class ModificaCredenzialeDialog extends JDialog {
 
-    private JTextField txtPiattaforma;
-    private JTextField txtUsername;
-    private JPasswordField txtPassword;
-    private JCheckBox chkA2F;
+    private JPasswordField txtNuovaPassword;
+    private JPasswordField txtConfermaPassword;
     private JCheckBox chkMostraPassword;
     private JButton btnSalva;
     private JButton btnAnnulla;
 
-    private String emailCreatore;
+    private int idCredenziale;
     private CredenzialiController controller;
     private DashboardFrame dashboard;
 
-    public NuovaCredenzialeFrame(String emailCreatore, DashboardFrame dashboard) {
-        super(dashboard, "Nuova Credenziale", true);
+    public ModificaCredenzialeDialog(JFrame parent, int idCredenziale, DashboardFrame dashboard) {
+        super(parent, "Modifica Password Credenziale", true);
 
-        this.emailCreatore = emailCreatore;
+        this.idCredenziale = idCredenziale;
         this.dashboard = dashboard;
         this.controller = new CredenzialiController();
 
@@ -31,56 +30,23 @@ public class NuovaCredenzialeFrame extends JDialog {
         initLayout();
         initListeners();
 
-        setSize(480, 520);
-        setLocationRelativeTo(dashboard);
+        setSize(480, 420);
+        setLocationRelativeTo(parent);
         setResizable(false);
         getContentPane().setBackground(UITheme.DARK_BG);
     }
 
     private void initComponents() {
-        txtPiattaforma = createStyledTextField();
-        txtUsername = createStyledTextField();
-        txtPassword = createStyledPasswordField();
+        txtNuovaPassword = createStyledPasswordField();
+        txtConfermaPassword = createStyledPasswordField();
         
-        chkA2F = createStyledCheckBox("2FA Attivo");
-        chkMostraPassword = createStyledCheckBox("Mostra password");
+        chkMostraPassword = createStyledCheckBox();
         
         btnSalva = new StyledButton("Salva", UITheme.SUCCESS_COLOR);
         btnSalva.setPreferredSize(new Dimension(160, 40));
         
         btnAnnulla = new StyledButton("Annulla", UITheme.TEXT_SECONDARY);
         btnAnnulla.setPreferredSize(new Dimension(160, 40));
-    }
-
-    private JTextField createStyledTextField() {
-        JTextField field = new JTextField(20);
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setBackground(UITheme.DARK_PANEL);
-        field.setForeground(UITheme.TEXT_COLOR);
-        field.setCaretColor(UITheme.TEXT_COLOR);
-        field.setPreferredSize(new Dimension(320, 40));
-        field.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UITheme.TEXT_SECONDARY, 1),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-
-        // Effetto focus
-        field.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(UITheme.SUCCESS_COLOR, 2),
-                        BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                ));
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                field.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(UITheme.TEXT_SECONDARY, 1),
-                        BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                ));
-            }
-        });
-
-        return field;
     }
 
     private JPasswordField createStyledPasswordField() {
@@ -114,8 +80,8 @@ public class NuovaCredenzialeFrame extends JDialog {
         return field;
     }
 
-    private JCheckBox createStyledCheckBox(String text) {
-        JCheckBox checkBox = new JCheckBox(text);
+    private JCheckBox createStyledCheckBox() {
+        JCheckBox checkBox = new JCheckBox("Mostra password");
         checkBox.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         checkBox.setForeground(UITheme.TEXT_SECONDARY);
         checkBox.setBackground(UITheme.DARK_BG);
@@ -154,18 +120,18 @@ public class NuovaCredenzialeFrame extends JDialog {
         panel.setBackground(UITheme.DARK_BG);
 
         // Icona
-        JLabel iconLabel = new JLabel("➕");
+        JLabel iconLabel = new JLabel("✏️");
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 35));
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Titolo
-        JLabel titleLabel = new JLabel("Nuova Credenziale");
+        JLabel titleLabel = new JLabel("Modifica Password");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         titleLabel.setForeground(UITheme.TEXT_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Sottotitolo
-        JLabel subtitleLabel = new JLabel("Aggiungi una nuova credenziale sicura");
+        JLabel subtitleLabel = new JLabel("Aggiorna la password della credenziale");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         subtitleLabel.setForeground(UITheme.TEXT_SECONDARY);
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -189,41 +155,27 @@ public class NuovaCredenzialeFrame extends JDialog {
         gbc.gridx = 0;
         gbc.weightx = 1.0;
 
-        // Piattaforma
-        JLabel lblPiattaforma = createFieldLabel("Piattaforma");
+        // Nuova Password
+        JLabel lblNuova = createFieldLabel("Nuova Password");
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel.add(lblPiattaforma, gbc);
+        panel.add(lblNuova, gbc);
 
         gbc.gridy = 1;
-        panel.add(txtPiattaforma, gbc);
+        panel.add(txtNuovaPassword, gbc);
 
-        // Username
-        JLabel lblUsername = createFieldLabel("Username");
+        // Conferma Password
+        JLabel lblConferma = createFieldLabel("Conferma Password");
         gbc.gridy = 2;
-        panel.add(lblUsername, gbc);
+        panel.add(lblConferma, gbc);
 
         gbc.gridy = 3;
-        panel.add(txtUsername, gbc);
+        panel.add(txtConfermaPassword, gbc);
 
-        // Password
-        JLabel lblPassword = createFieldLabel("Password");
+        // Checkbox
         gbc.gridy = 4;
-        panel.add(lblPassword, gbc);
-
-        gbc.gridy = 5;
-        panel.add(txtPassword, gbc);
-
-        // Checkboxes
-        JPanel checkboxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        checkboxPanel.setBackground(UITheme.DARK_BG);
-        checkboxPanel.add(chkMostraPassword);
-        checkboxPanel.add(Box.createHorizontalStrut(20));
-        checkboxPanel.add(chkA2F);
-
-        gbc.gridy = 6;
-        gbc.insets = new Insets(5, 0, 5, 0);
-        panel.add(checkboxPanel, gbc);
+        gbc.insets = new Insets(8, 0, 5, 0);
+        panel.add(chkMostraPassword, gbc);
 
         return panel;
     }
@@ -249,47 +201,49 @@ public class NuovaCredenzialeFrame extends JDialog {
         // Mostra/nascondi password
         chkMostraPassword.addActionListener(e -> {
             char echoChar = chkMostraPassword.isSelected() ? (char) 0 : '•';
-            txtPassword.setEchoChar(echoChar);
+            txtNuovaPassword.setEchoChar(echoChar);
+            txtConfermaPassword.setEchoChar(echoChar);
         });
 
-        // Salva
-        btnSalva.addActionListener(e -> salvaNuovaCredenziale());
-
-        // Annulla
         btnAnnulla.addActionListener(e -> dispose());
 
+        btnSalva.addActionListener(e -> salvaPassword());
+
         // Enter per salvare
-        txtPassword.addActionListener(e -> salvaNuovaCredenziale());
+        txtConfermaPassword.addActionListener(e -> salvaPassword());
     }
 
-    private void salvaNuovaCredenziale() {
-        String piattaforma = txtPiattaforma.getText().trim();
-        String username = txtUsername.getText().trim();
-        String password = new String(txtPassword.getPassword());
-        boolean a2f = chkA2F.isSelected();
+    private void salvaPassword() {
+        String nuovaPassword = new String(txtNuovaPassword.getPassword());
+        String confermaPassword = new String(txtConfermaPassword.getPassword());
 
-        // Validazione
-        if (piattaforma.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showError("Tutti i campi sono obbligatori!");
+        // Validazione input
+        if (nuovaPassword.isEmpty() || confermaPassword.isEmpty()) {
+            showError("Tutti i campi sono obbligatori.");
             return;
         }
 
-        if (password.length() < 4) {
-            showError("La password deve contenere almeno 4 caratteri!");
+        if (!nuovaPassword.equals(confermaPassword)) {
+            showError("Le password non coincidono.");
+            txtNuovaPassword.setText("");
+            txtConfermaPassword.setText("");
             return;
         }
 
-        // Salva
-        boolean ok = controller.inserisciCredenziale(
-                piattaforma, username, password, emailCreatore, a2f
-        );
+        if (nuovaPassword.length() < 4) {
+            showError("La password deve contenere almeno 4 caratteri.");
+            return;
+        }
 
-        if (ok) {
-            showSuccess("Credenziale salvata con successo!");
+        // Salva la nuova password
+        boolean successo = controller.modificaPassword(idCredenziale, nuovaPassword);
+
+        if (successo) {
+            showSuccess("Password aggiornata con successo!");
             dashboard.caricaCredenziali();
             dispose();
         } else {
-            showError("Errore durante il salvataggio.");
+            showError("Errore durante l'aggiornamento della password.");
         }
     }
 
