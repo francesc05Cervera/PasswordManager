@@ -55,7 +55,7 @@ public class CredenzialiDAO implements CredenzialiDAOInterface {
     @Override
     public boolean changePassword(int idCredenziale, String nuovaPassword) throws SQLException {
 
-        String SQL = "UPDATE CredenzialiAccesso SET passwordP = ? WHERE id = ?";
+        String SQL = "UPDATE CredenzialiAccesso SET passwordP = ? WHERE idcredenziali = ?";
 
         Connection conn = null;
         PreparedStatement ps = null;
@@ -84,7 +84,7 @@ public class CredenzialiDAO implements CredenzialiDAOInterface {
     @Override
     public CredenzialiAccesso findById(int id) throws SQLException {
 
-        String SQL = "SELECT * FROM CredenzialiAccesso WHERE id = ?";
+        String SQL = "SELECT * FROM CredenzialiAccesso WHERE idcredenziali = ?";
 
         Connection conn = null;
         PreparedStatement ps = null;
@@ -169,7 +169,7 @@ public class CredenzialiDAO implements CredenzialiDAOInterface {
     @Override
     public boolean delete(int id) throws SQLException {
 
-        String SQL = "DELETE FROM CredenzialiAccesso WHERE id = ?";
+        String SQL = "DELETE FROM CredenzialiAccesso WHERE idcredenziali = ?";
 
         Connection conn = null;
         PreparedStatement ps = null;

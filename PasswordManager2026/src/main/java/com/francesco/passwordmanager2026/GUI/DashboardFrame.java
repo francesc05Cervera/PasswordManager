@@ -2,6 +2,7 @@ package com.francesco.passwordmanager2026.GUI;
 
 import com.francesco.passwordmanager2026.Controller.CredenzialiController;
 import com.francesco.passwordmanager2026.entity.CredenzialiAccesso;
+import com.francesco.passwordmanager2026.GUI.Dialog.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -21,6 +22,8 @@ public class DashboardFrame extends JFrame {
     private JButton btnModifica;
     private JButton btnElimina;
     private JButton btnModificaPassword;
+    private JButton btnLogout;  // NUOVO
+
 
     public DashboardFrame(String emailUtente) {
         super("PasswordManager2026 - Dashboard");
@@ -46,13 +49,14 @@ public class DashboardFrame extends JFrame {
         btnModifica = new JButton("Modifica Credenziali");
         btnElimina = new JButton("Elimina Credenziali");
         btnModificaPassword = new JButton("Modifica Password Login");
+        btnLogout = new JButton("Logout");  // NUOVO
 
         // Disattivati finché non selezioni una riga
         btnModifica.setEnabled(false);
         btnElimina.setEnabled(false);
 
         tableModel = new DefaultTableModel(
-                new Object[]{"Piattaforma", "Username", "Password", "2FA"}, 0
+                new Object[]{"ID", "Piattaforma", "Username", "Password", "2FA"}, 0  // Aggiungi "ID"
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -62,15 +66,22 @@ public class DashboardFrame extends JFrame {
 
         table = new JTable(tableModel);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        // Nascondi la colonna ID (rimane nei dati ma non è visibile)
+        table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getColumnModel().getColumn(0).setWidth(0);
     }
 
     private void initLayout() {
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        topPanel.add(btnNuova);
+    	  JPanel topPanel = new JPanel(new GridLayout(2, 3, 10, 10));  // 2 righe, 3 colonne
+    	    topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));        
+    	    topPanel.add(btnNuova);
         topPanel.add(btnModifica);
         topPanel.add(btnElimina);
         topPanel.add(btnModificaPassword);
+        topPanel.add(btnLogout);  // NUOVO
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -118,36 +129,45 @@ public class DashboardFrame extends JFrame {
             }
         });
 
+     // LOGOUT
+        btnLogout.addActionListener(e -> {
+            int conferma = JOptionPane.showConfirmDialog(
+                    this,
+                    "Sei sicuro di voler uscire?",
+                    "Conferma Logout",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (conferma == JOptionPane.YES_OPTION) {
+                dispose();  // Chiude la dashboard
+                new LoginFrame().setVisible(true);  // Apre il login
+            }
+        });
+        
         // MODIFICA CREDENZIALE
+     // MODIFICA CREDENZIALE (solo password)
         btnModifica.addActionListener(e -> {
             int row = table.getSelectedRow();
-            if (row == -1) return;
-
-            int id = (int) tableModel.getValueAt(row, 0);
-            String piattaforma = (String) tableModel.getValueAt(row, 1);
-            String username = (String) tableModel.getValueAt(row, 2);
-            String password = (String) tableModel.getValueAt(row, 3);
-            boolean a2f = (boolean) tableModel.getValueAt(row, 4);
-
-            CredenzialiAccesso cred = new CredenzialiAccesso(piattaforma, username, password, emailUtente, a2f);
-            cred.setId(id);
-            new ModificaCredenzialeFrame(cred, this).setVisible(true);
-        });
-
-        // MODIFICA PASSWORD
-        btnModificaPassword.addActionListener(e -> {
-            int row = table.getSelectedRow();
             if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Seleziona una credenziale per modificare la password.");
+                JOptionPane.showMessageDialog(this, "Seleziona una credenziale.");
                 return;
             }
 
             int id = (int) tableModel.getValueAt(row, 0);
-            new ModificaPasswordCredenzialeFrame(id, this).setVisible(true);
+            new ModificaPasswordCredenzialeDialog(this, id, this).setVisible(true);
         });
+
+
+      
+     // MODIFICA PASSWORD LOGIN
+        btnModificaPassword.addActionListener(e -> {
+            new ModificaPasswordLoginDialog(this, emailUtente).setVisible(true);
+        });
+
     }
 
     // Ricarica la tabella
+ // Ricarica la tabella
     public void caricaCredenziali() {
         tableModel.setRowCount(0);
 
@@ -156,7 +176,7 @@ public class DashboardFrame extends JFrame {
         if (lista != null) {
             for (CredenzialiAccesso c : lista) {
                 tableModel.addRow(new Object[]{
-                        
+                        c.getId(),              // Aggiungi l'ID come prima colonna
                         c.getNomePiattaforma(),
                         c.getUsername(),
                         c.getPasswordP(),
@@ -165,4 +185,5 @@ public class DashboardFrame extends JFrame {
             }
         }
     }
+
 }
