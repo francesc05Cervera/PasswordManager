@@ -36,15 +36,16 @@ public class DashboardFrame extends JFrame {
         setSize(700, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setResizable(false);
     }
 
     private void initComponents() {
 
-        btnNuova = new JButton("Crea Nuova Credenziale");
-        btnModifica = new JButton("Modifica Credenziale");
-        btnElimina = new JButton("Elimina Credenziale");
-        btnModificaPassword = new JButton("Modifica Password");
+        btnNuova = new JButton("Aggiungi Credenziali");
+        btnModifica = new JButton("Modifica Credenziali");
+        btnElimina = new JButton("Elimina Credenziali");
+        btnModificaPassword = new JButton("Modifica Password Login");
 
         // Disattivati finché non selezioni una riga
         btnModifica.setEnabled(false);
