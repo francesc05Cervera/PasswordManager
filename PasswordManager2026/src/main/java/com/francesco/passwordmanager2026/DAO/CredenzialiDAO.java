@@ -13,7 +13,7 @@ public class CredenzialiDAO implements CredenzialiDAOInterface {
     @Override
     public boolean insert(CredenzialiAccesso credenziale) throws SQLException {
 
-        String SQL = "INSERT INTO CredenzialiAccesso(nomePiattaforma, username, passwordP, utenteCheCreaRecord, a2fPresent) "
+        String SQL = "INSERT INTO CredenzialiAccesso(nomePiattaforma, username, passwordP, utenteCheCreaRecord, a2f_Present) "
                    + "VALUES (?, ?, ?, ?, ?)";
 
         Connection conn = null;
@@ -142,12 +142,12 @@ public class CredenzialiDAO implements CredenzialiDAOInterface {
 
             while (rs.next()) {
                 CredenzialiAccesso c = new CredenzialiAccesso();
-                c.setId(rs.getInt("id"));
+                c.setId(rs.getInt("idcredenziali"));
                 c.setNomePiattaforma(rs.getString("nomePiattaforma"));
                 c.setUsername(rs.getString("username"));
                 c.setPasswordP(rs.getString("passwordP"));
                 c.setUtenteCheCreaRecord(rs.getString("utenteCheCreaRecord"));
-                c.setA2fPresent(rs.getBoolean("a2fPresent"));
+                c.setA2fPresent(rs.getBoolean("a2f_Present"));
 
                 lista.add(c);
             }

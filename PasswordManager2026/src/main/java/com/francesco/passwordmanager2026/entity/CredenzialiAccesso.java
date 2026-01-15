@@ -22,6 +22,20 @@ public class CredenzialiAccesso {
         this.utenteCheCreaRecord = utenteCheCreaRecord;
         this.a2fPresent = a2fPresent;
     }
+    
+    public CredenzialiAccesso(int id,
+            String nomePiattaforma,
+            String username,
+            String passwordP,
+            String utenteCheCreaRecord,
+            boolean a2fPresent) {
+this.id = id;
+this.nomePiattaforma = nomePiattaforma;
+this.username = username;
+this.passwordP = passwordP;
+this.utenteCheCreaRecord = utenteCheCreaRecord;
+this.a2fPresent = a2fPresent;
+}
 
     // Getter e Setter
     public int getId() {
