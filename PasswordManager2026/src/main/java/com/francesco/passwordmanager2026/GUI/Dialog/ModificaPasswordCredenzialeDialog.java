@@ -12,21 +12,33 @@ public class ModificaPasswordCredenzialeDialog extends JDialog {
     private JPasswordField txtConfermaPassword;
     private JButton btnSalva;
     private JButton btnAnnulla;
+    private String emailUtente;      // AGGIUNTO
+    private String passwordUtente;   // AGGIUNTO
 
     private int idCredenziale;
     private CredenzialiController controller;
     private DashboardFrame dashboard;
+	private DashboardFrame dashboardFrame;
+	private CredenzialiController credController;
 
-    public ModificaPasswordCredenzialeDialog(JFrame parent, int idCredenziale, DashboardFrame dashboard) {
-        super(parent, "Modifica Password Credenziale", true);
+    public ModificaPasswordCredenzialeDialog(JFrame parent, int id, 
+            String emailUtente, String passwordUtente,
+            DashboardFrame dashboard,
+            CredenzialiController controller) {
+super(parent, "Modifica Password", true);
 
-        this.idCredenziale = idCredenziale;
-        this.dashboard = dashboard;
-        this.controller = new CredenzialiController();
+this.idCredenziale = id;
+this.emailUtente = emailUtente;
+this.passwordUtente = passwordUtente;
+this.dashboardFrame = dashboard;
+this.credController = controller;  // USA quello passato (già configurato)
 
-        initComponents();
-        initLayout();
-        initListeners();
+// RIMUOVI questa riga se c'è:
+// this.credController = new CredenzialiController();
+
+initComponents();
+initLayout();
+initListeners();
 
         setSize(400, 200);
         setLocationRelativeTo(parent);

@@ -16,6 +16,7 @@ import java.util.Map;
 public class DashboardFrame extends JFrame {
 
     private String emailUtente;
+    private String passwordUtente;
     private CredenzialiController credController;
 
     private JTable table;
@@ -30,11 +31,14 @@ public class DashboardFrame extends JFrame {
     private Map<Integer, String> passwordMap = new HashMap<>();
     private Map<Integer, Boolean> passwordVisibilityMap = new HashMap<>();
 
-    public DashboardFrame(String emailUtente) {
+    public DashboardFrame(String emailUtente, String passwordUtente) {
         super("PasswordManager 2026 - Dashboard");
 
         this.emailUtente = emailUtente;
+        this.passwordUtente = passwordUtente;
         this.credController = new CredenzialiController();
+        
+        credController.setCurrentUser(emailUtente, passwordUtente);
 
         initComponents();
         initLayout();
@@ -50,6 +54,15 @@ public class DashboardFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
         getContentPane().setBackground(UITheme.DARK_BG);
+        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                credController.clearSession();
+                passwordMap.clear();
+                passwordVisibilityMap.clear();
+            }
+        });
     }
 
     private void initComponents() {
@@ -103,19 +116,16 @@ public class DashboardFrame extends JFrame {
     }
     
     private void configureTableColumns() {
-        // Nascondi colonna ID
         table.getColumnModel().getColumn(0).setMinWidth(0);
         table.getColumnModel().getColumn(0).setMaxWidth(0);
         table.getColumnModel().getColumn(0).setWidth(0);
 
-        // Larghezze colonne
-        table.getColumnModel().getColumn(1).setPreferredWidth(200); // Piattaforma
-        table.getColumnModel().getColumn(2).setPreferredWidth(200); // Username
-        table.getColumnModel().getColumn(3).setPreferredWidth(250); // Password
-        table.getColumnModel().getColumn(4).setPreferredWidth(80);  // 2FA
-        table.getColumnModel().getColumn(5).setPreferredWidth(150); // Azioni
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(200);
+        table.getColumnModel().getColumn(3).setPreferredWidth(250);
+        table.getColumnModel().getColumn(4).setPreferredWidth(80);
+        table.getColumnModel().getColumn(5).setPreferredWidth(150);
 
-        // Stile header
         JTableHeader header = table.getTableHeader();
         header.setBackground(UITheme.DARK_TABLE_HEADER);
         header.setForeground(UITheme.TEXT_COLOR);
@@ -127,7 +137,6 @@ public class DashboardFrame extends JFrame {
         AlternatingRowRenderer centerRenderer = new AlternatingRowRenderer();
         PasswordTableCellRenderer passwordRenderer = new PasswordTableCellRenderer();
         
-        // Renderer per colonne normali
         for (int i = 1; i < 5; i++) {
             if (i == 3) {
                 table.getColumnModel().getColumn(i).setCellRenderer(passwordRenderer);
@@ -136,7 +145,6 @@ public class DashboardFrame extends JFrame {
             }
         }
         
-        // Renderer e editor per colonna azioni
         table.getColumnModel().getColumn(5).setCellRenderer(new PasswordActionButton());
         table.getColumnModel().getColumn(5).setCellEditor(
             new PasswordActionEditor(new JCheckBox(), passwordMap, passwordVisibilityMap, tableModel, this)
@@ -236,7 +244,8 @@ public class DashboardFrame extends JFrame {
     }
     
     private void handleNuovaCredenziale() {
-        new NuovaCredenzialeFrame(emailUtente, this).setVisible(true);
+        // MODIFICA: passa il controller già configurato
+        new NuovaCredenzialeFrame(emailUtente, passwordUtente, this, credController).setVisible(true);
     }
     
     private void handleEliminaCredenziale() {
@@ -268,7 +277,8 @@ public class DashboardFrame extends JFrame {
         }
 
         int id = (int) tableModel.getValueAt(row, 0);
-        new ModificaPasswordCredenzialeDialog(this, id, this).setVisible(true);
+        // MODIFICA: passa anche il controller
+        new ModificaPasswordCredenzialeDialog(this, id, emailUtente, passwordUtente, this, credController).setVisible(true);
     }
     
     private void handleModificaPasswordLogin() {
@@ -282,6 +292,10 @@ public class DashboardFrame extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (conferma == JOptionPane.YES_OPTION) {
+            credController.clearSession();
+            passwordMap.clear();
+            passwordVisibilityMap.clear();
+            
             dispose();
             new LoginFrame().setVisible(true);
         }
@@ -304,7 +318,15 @@ public class DashboardFrame extends JFrame {
     
     private void addCredentialToTable(CredenzialiAccesso c) {
         int id = c.getId();
-        passwordMap.put(id, c.getPasswordP());
+        
+        String encryptedPassword = c.getPasswordP();
+        String decryptedPassword = credController.decryptPassword(encryptedPassword);
+        
+        if (decryptedPassword == null) {
+            decryptedPassword = "[Errore decifratura]";
+        }
+        
+        passwordMap.put(id, decryptedPassword);
         passwordVisibilityMap.put(id, false);
         
         tableModel.addRow(new Object[]{

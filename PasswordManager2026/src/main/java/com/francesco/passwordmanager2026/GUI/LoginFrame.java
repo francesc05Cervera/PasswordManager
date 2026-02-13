@@ -55,7 +55,6 @@ public class LoginFrame extends JFrame {
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)
         ));
         
-        // Effetto focus
         field.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 field.setBorder(BorderFactory.createCompoundBorder(
@@ -85,7 +84,6 @@ public class LoginFrame extends JFrame {
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)
         ));
         
-        // Effetto focus
         field.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 field.setBorder(BorderFactory.createCompoundBorder(
@@ -120,16 +118,9 @@ public class LoginFrame extends JFrame {
         mainPanel.setBackground(UITheme.DARK_BG);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
 
-        // Header con logo e titolo
         JPanel headerPanel = createHeaderPanel();
-        
-        // Form panel
         JPanel formPanel = createFormPanel();
-        
-        // Button panel
         JPanel buttonPanel = createButtonPanel();
-        
-        // Footer panel
         JPanel footerPanel = createFooterPanel();
 
         mainPanel.add(headerPanel);
@@ -148,18 +139,15 @@ public class LoginFrame extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(UITheme.DARK_BG);
 
-        // Icona/Logo
         JLabel iconLabel = new JLabel("🔐");
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 60));
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Titolo
         JLabel titleLabel = new JLabel("PasswordManager 2026");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(UITheme.TEXT_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Sottotitolo
         JLabel subtitleLabel = new JLabel("Accedi al tuo account");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(UITheme.TEXT_SECONDARY);
@@ -183,7 +171,6 @@ public class LoginFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        // Email
         JLabel lblEmail = new JLabel("Email");
         lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblEmail.setForeground(UITheme.TEXT_COLOR);
@@ -195,7 +182,6 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 1;
         panel.add(txtEmail, gbc);
 
-        // Password
         JLabel lblPassword = new JLabel("Password");
         lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblPassword.setForeground(UITheme.TEXT_COLOR);
@@ -206,7 +192,6 @@ public class LoginFrame extends JFrame {
         gbc.gridy = 3;
         panel.add(txtPassword, gbc);
 
-        // Checkbox mostra password
         gbc.gridy = 4;
         gbc.insets = new Insets(5, 0, 10, 0);
         panel.add(chkMostraPassword, gbc);
@@ -243,7 +228,6 @@ public class LoginFrame extends JFrame {
     }
 
     private void initListeners() {
-        // Mostra/nascondi password
         chkMostraPassword.addActionListener(e -> {
             if (chkMostraPassword.isSelected()) {
                 txtPassword.setEchoChar((char) 0);
@@ -252,13 +236,8 @@ public class LoginFrame extends JFrame {
             }
         });
 
-        // Login
         btnLogin.addActionListener(e -> handleLogin());
-
-        // Registrazione
         btnRegistrati.addActionListener(e -> handleRegistrazione());
-
-        // Enter per login
         txtPassword.addActionListener(e -> handleLogin());
     }
 
@@ -275,7 +254,8 @@ public class LoginFrame extends JFrame {
 
         if (loginOk) {
             dispose();
-            new DashboardFrame(email).setVisible(true);
+            // MODIFICA: passa anche la password al DashboardFrame
+            new DashboardFrame(email, password).setVisible(true);
         } else {
             showError("Email o password errati!");
             txtPassword.setText("");

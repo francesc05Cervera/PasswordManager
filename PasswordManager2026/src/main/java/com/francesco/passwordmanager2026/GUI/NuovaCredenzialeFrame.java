@@ -17,15 +17,23 @@ public class NuovaCredenzialeFrame extends JDialog {
     private JButton btnAnnulla;
 
     private String emailCreatore;
+    private String passwordUtente;
     private CredenzialiController controller;
     private DashboardFrame dashboard;
+	private String emailUtente;
+	private DashboardFrame dashboardParent;
+	private CredenzialiController credController;
 
-    public NuovaCredenzialeFrame(String emailCreatore, DashboardFrame dashboard) {
-        super(dashboard, "Nuova Credenziale", true);
-
-        this.emailCreatore = emailCreatore;
-        this.dashboard = dashboard;
-        this.controller = new CredenzialiController();
+    public NuovaCredenzialeFrame(String emailUtente, String passwordUtente, 
+            DashboardFrame parent, CredenzialiController controller) 
+    {
+        super(parent, "Nuova Credenziale", true);  // parent, titolo, modal
+			
+			this.emailUtente = emailUtente;
+			this.passwordUtente = passwordUtente;
+			this.dashboardParent = parent;
+			this.credController = controller;  // USA quello passato (già configurato)
+			
 
         initComponents();
         initLayout();
@@ -280,13 +288,16 @@ public class NuovaCredenzialeFrame extends JDialog {
         }
 
         // Salva
-        boolean ok = controller.inserisciCredenziale(
-                piattaforma, username, password, emailCreatore, a2f
+     // CORRETTO:
+        boolean ok = credController.inserisciCredenziale(
+                piattaforma, username, password, emailUtente, a2f
         );
+
 
         if (ok) {
             showSuccess("Credenziale salvata con successo!");
-            dashboard.caricaCredenziali();
+         // CORRETTO:
+            dashboardParent.caricaCredenziali();
             dispose();
         } else {
             showError("Errore durante il salvataggio.");
